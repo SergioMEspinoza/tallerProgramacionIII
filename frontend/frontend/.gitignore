@@ -1,0 +1,20 @@
+# Entornos virtuales (Lo más importante)
+venv/
+env/
+.venv/
+
+# Reflex y archivos temporales
+.web/
+.states/
+__pycache__/
+*.py[cod]
+.reflex/
+
+# Bases de datos y secretos
+*.db
+*.sqlite3
+.env
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
