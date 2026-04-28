@@ -1,0 +1,109 @@
+-- Tabla Rol
+CREATE TABLE rol (
+    id_rol SERIAL PRIMARY KEY,
+    nombre_rol VARCHAR(15) NOT NULL UNIQUE
+);
+
+-- Tabla Usuario
+CREATE TABLE usuario (
+    id_usuario SERIAL PRIMARY KEY,
+    nombre_usuario VARCHAR(30) UNIQUE NOT NULL,
+    email VARCHAR(20) UNIQUE NOT NULL,
+    contrasena TEXT NOT NULL,
+    estado VARCHAR(20) DEFAULT 'Activo',
+    id_rol INT NOT NULL,
+    FOREIGN KEY (id_rol) REFERENCES rol(id_rol)
+);
+
+CREATE TABLE personal (
+    id_personal SERIAL PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL,
+    sexo VARCHAR(20) NOT NULL,
+    edad INT NOT NULL,
+    id_usuario INT NOT NULL UNIQUE,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+);
+
+-- Tabla Paciente
+CREATE TABLE paciente (
+    id_paciente SERIAL PRIMARY KEY,
+    nombre_paciente VARCHAR(100) NOT NULL,
+    tipo_acceso VARCHAR(20) CHECK (tipo_acceso IN ('Fistula', 'Cateter')),
+    estado VARCHAR(20) DEFAULT 'Activo'
+);
+
+-- Tabla Categoria
+CREATE TABLE categoria (
+    id_categoria SERIAL PRIMARY KEY,
+    nombre_categoria VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- Tabla Insumo
+CREATE TABLE insumo (
+    id_insumo SERIAL PRIMARY KEY,
+    nombre_insumo VARCHAR(100) NOT NULL,
+    descripcion_insumo TEXT,
+    minimo_stock INT NOT NULL,
+    cantidad_stock INT NOT NULL CHECK (cantidad_stock >= 0),
+    estado VARCHAR(20) CHECK (estado IN ('activo', 'eliminado')),
+    id_categoria INT,
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
+);
+
+ALTER TABLE insumo
+ALTER COLUMN estado SET DEFAULT 'activo';
+
+
+-- Tabla Entrada
+CREATE TABLE entrada (
+    id_entrada SERIAL PRIMARY KEY,
+    fecha_entrada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+);
+
+-- Tabla Detalle Entrada
+CREATE TABLE detalle_entrada (
+    id_detalle_entrada SERIAL PRIMARY KEY,
+    id_entrada INT NOT NULL,
+    id_insumo INT NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    FOREIGN KEY (id_entrada) REFERENCES entrada(id_entrada) ON DELETE CASCADE,
+    FOREIGN KEY (id_insumo) REFERENCES insumo(id_insumo)
+);
+
+-- Tabla Salida
+CREATE TABLE salida (
+    id_salida SERIAL PRIMARY KEY,
+    fecha_salida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_usuario INT NOT NULL,
+    id_paciente INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente)
+);
+
+-- Tabla Detalle Salida
+CREATE TABLE detalle_salida (
+    id_detalle_salida SERIAL PRIMARY KEY,
+    id_salida INT NOT NULL,
+    id_insumo INT NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    motivo VARCHAR(50),
+    observacion TEXT,
+    FOREIGN KEY (id_salida) REFERENCES salida(id_salida) ON DELETE CASCADE,
+    FOREIGN KEY (id_insumo) REFERENCES insumo(id_insumo)
+);
+
+-- =========================================
+-- DATOS INICIALES
+-- =========================================
+
+INSERT INTO rol (nombre_rol) VALUES
+('Administrador'),
+('Enfermero'),
+('Medico');
+
+INSERT INTO categoria (nombre_categoria) VALUES
+('Filtros'),
+('Soluciones'),
+('Material Descartable');
