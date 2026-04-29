@@ -22,13 +22,13 @@ class State(rx.State):
     # lista para los insumos
     insumos : List[insumo] = []
 
-    # lista para los insumos
+    # listado de categorias para la funcion rx.select
     categorias : List[str] = controlador_categoria.obtener_nombres_categorias()
 
     #usado en la funcion de seleccionar la categoria 
     nombre_categoria : str = ""
 
-    #atributos auxiliares en para convertir 
+    #atributos auxiliares para los input
     str_minimo_stock : str = ""
     str_cantidad_stock : str = ""
 

@@ -21,12 +21,12 @@ class controlador_paciente:
         return pacientes
 
 
-    def agregar_paciente(self,nombre, tipo_acceso, estado):
+    def agregar_paciente(self,nombre, tipo_acceso):
         cur = self.db.cursor()
 
         cur.execute(
-            "INSERT INTO paciente (nombre_paciente, tipo_acceso, estado) VALUES (%s, %s, %s)",
-            (nombre, tipo_acceso, estado)
+            "INSERT INTO paciente (nombre_paciente, tipo_acceso) VALUES (%s, %s)",
+            (nombre, tipo_acceso)
         )
 
         self.db.commit()
@@ -39,6 +39,19 @@ class controlador_paciente:
         cur.execute(
             """UPDATE paciente 
             SET estado='Eliminado'
+            WHERE id_paciente=%s""",
+            (id_paciente,)
+        )
+        
+        self.db.commit()
+        cur.close()
+
+    def reestablecer_paciente(self,id_paciente):
+        cur = self.db.cursor()
+
+        cur.execute(
+            """UPDATE paciente 
+            SET estado='Activo'
             WHERE id_paciente=%s""",
             (id_paciente,)
         )
@@ -61,14 +74,14 @@ class controlador_paciente:
         cur.close()
 
 
-    def actualizar_paciente(self,id_paciente, nombre, tipo_acceso, estado):
+    def actualizar_paciente(self,id_paciente, nombre, tipo_acceso):
         cur = self.db.cursor()
 
         cur.execute(
             """UPDATE paciente 
-            SET nombre_paciente=%s, tipo_acceso=%s, estado=%s 
+            SET nombre_paciente=%s, tipo_acceso=%s
             WHERE id_paciente=%s""",
-            (nombre, tipo_acceso, estado, id_paciente)
+            (nombre, tipo_acceso, id_paciente)
         )
 
         self.db.commit()

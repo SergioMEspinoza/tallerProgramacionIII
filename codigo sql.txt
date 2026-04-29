@@ -53,6 +53,9 @@ CREATE TABLE insumo (
 ALTER TABLE insumo
 ALTER COLUMN estado SET DEFAULT 'activo';
 
+ALTER TABLE insumo
+ALTER COLUMN cantidad_stock SET DEFAULT 0;
+
 
 -- Tabla Entrada
 CREATE TABLE entrada (

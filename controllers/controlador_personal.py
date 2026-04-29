@@ -1,5 +1,6 @@
 from ..database.base_datos import Database
 from ..models.personal import personal
+from psycopg2.extras import RealDictCursor
 
 class controlador_personal:
     def __init__(self):
@@ -20,22 +21,31 @@ class controlador_personal:
         
         cur.close()
         return personales
+    
+    def obtener_datos_personales_de_un_usario(self,id_usuario):
+
+        cur = self.db.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT id_personal, nombre, sexo, edad, id_usuario FROM personal WHERE id_usuario = %s LIMIT 1", (id_usuario,))
+        datos = cur.fetchone()
+        
+        cur.close()
+        return datos
 
 
-    def agregar_personal(self,nombre, sexo, edad, id_usuario):
+    def agregar_personal(self,personal):
         
         cur = self.db.cursor()
 
         cur.execute(
             "INSERT INTO personal (nombre, sexo, edad, id_usuario) VALUES (%s, %s, %s, %s)",
-            (nombre, sexo, edad, id_usuario)
+            (personal.nombre, personal.sexo, personal.edad, personal.id_usuario)
         )
 
         self.db.commit()
         cur.close()
 
 
-    def actualizar_personal(self,id_personal, nombre, sexo, edad):
+    def actualizar_personal(self,personal):
         
         cur = self.db.cursor()
 
@@ -43,7 +53,7 @@ class controlador_personal:
             """UPDATE personal 
             SET nombre=%s, sexo=%s, edad=%s 
             WHERE id_personal=%s""",
-            (nombre, sexo, edad, id_personal)
+            (personal.nombre, personal.sexo, personal.edad, personal.id_personal)
         )
 
         self.db.commit()

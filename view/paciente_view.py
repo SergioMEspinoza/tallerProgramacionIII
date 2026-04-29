@@ -7,22 +7,28 @@ from ..controllers.controlador_paciente import controlador_paciente
 controlador_paciente = controlador_paciente()
 
 class State(rx.State):
+
     id_editando: int = -1
     nombre: str = ""
     tipo: str = ""
     estado: str = ""
+
     pacientes: List[paciente] = []
 
     def cargar_pacientes(self):
         self.pacientes = controlador_paciente.obtener_pacientes()
 
     def guardar(self):
-        controlador_paciente.agregar_paciente(self.nombre, self.tipo, self.estado)
+        controlador_paciente.agregar_paciente(self.nombre, self.tipo)
         self.limpiar()
         self.cargar_pacientes()
 
     def eliminar(self, id):
         controlador_paciente.eliminar_paciente(id)
+        self.cargar_pacientes()
+
+    def reestablecer(self, id):
+        controlador_paciente.reestablecer_paciente(id)
         self.cargar_pacientes()
 
     def editar(self, paciente: dict): # Le decimos que espere un diccionario
@@ -35,8 +41,7 @@ class State(rx.State):
         controlador_paciente.actualizar_paciente(
             self.id_editando,
             self.nombre,
-            self.tipo,
-            self.estado
+            self.tipo
         )
         self.id_editando = -1
         self.limpiar()
@@ -55,7 +60,11 @@ def fila_paciente(p):
         rx.text(p.estado, width="30%"),
 
         rx.button("Editar", on_click=lambda: State.editar(p)),
-        rx.button("Eliminar", color="red", on_click=lambda: State.eliminar(p.id_paciente))
+        rx.cond(
+            p.estado == "Activo",
+            rx.button("Eliminar", color="red", on_click=lambda: State.eliminar(p.id_paciente)),
+            rx.button("Reestablecer", color="blue", on_click=lambda: State.reestablecer(p.id_paciente))
+        )
     )
 
 
@@ -68,15 +77,12 @@ def vista_paciente():
             value=State.nombre,
             on_change=State.set_nombre
         ),
-        rx.input(
-            placeholder="Tipo",
+    
+        rx.select(
+            ["Fistula","Cateter"],
             value=State.tipo,
-            on_change=State.set_tipo
-        ),
-        rx.input(
-            placeholder="Estado",
-            value=State.estado,
-            on_change=State.set_estado
+            on_change=State.set_tipo,
+            placeholder="Seleccione el tipo de acceso"
         ),
 
         rx.cond(

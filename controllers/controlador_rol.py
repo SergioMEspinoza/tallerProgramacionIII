@@ -19,6 +19,47 @@ class controlador_rol:
         cur.close()
         return roles
 
+    def obtener_nombres_roles(self):
+        cur = self.db.cursor()
+        cur.execute("SELECT nombre_rol FROM rol ORDER BY id_rol")
+        
+        # Instanciamos el modelo de Reflex
+        roles = [row[0] for row in cur.fetchall()]
+        
+        cur.close()
+        return roles
+    
+    def obtener_id_rol(self,nombre_rol):
+        cur = self.db.cursor()
+        
+        cur.execute(
+            """SELECT id_rol 
+            FROM rol 
+            WHERE nombre_rol=%s
+            LIMIT 1""",
+            (nombre_rol,)
+        )
+        
+        id = cur.fetchone()
+        
+        cur.close()
+        return int(id[0])
+    
+    def obtener_un_nombre_rol(self,id_rol):
+        cur = self.db.cursor()
+        
+        cur.execute(
+            """SELECT nombre_rol 
+            FROM rol 
+            WHERE id_rol=%s
+            LIMIT 1""",
+            (id_rol,)
+        )
+        
+        nombre = cur.fetchone()
+        
+        cur.close()
+        return str(nombre[0])
 
     def agregar_rol(self,nombre_rol):
         
