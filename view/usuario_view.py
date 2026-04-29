@@ -32,8 +32,29 @@ class State(rx.State):
     #atributos auxiliares para los input del personal
     str_edad : str = ""
 
+    #set para cambio de informacion con los inputs
+    @rx.event
+    def set_nombre_usuario(self, value: str):
+        self.usuario_editar.nombre_usuario = value
+    
+    @rx.event
+    def set_email(self, value: str):
+        self.usuario_editar.email = value
+    
+    @rx.event
+    def set_contrasena(self, value: str):
+        self.usuario_editar.contrasena = value
+
+    @rx.event
+    def set_nombre(self, value: str):
+        self.personal_editar.nombre = value
+
+    @rx.event
+    def set_sexo(self, value: str):
+        self.personal_editar.sexo = value
+
     def cargar_usuarios(self):
-        self.insumos = controlador_usuario.obtener_usuarios()
+        self.usuarios = controlador_usuario.obtener_usuarios()
     
     def cargar_roles(self):
         self.categorias = controlador_rol.obtener_nombres_roles()
@@ -58,7 +79,7 @@ class State(rx.State):
     def editar(self, usuario: dict): # Le decimos que espere un diccionario
 
         #editar los atributos del usuario
-        self.usuario_editar.id_usuario = int(usuario["id_insumo"])
+        self.usuario_editar.id_usuario = int(usuario["id_usuario"])
         self.usuario_editar.nombre_usuario = usuario["nombre_usuario"]
         self.usuario_editar.email = usuario["email"]
         self.usuario_editar.contrasena = usuario["contrasena"]
@@ -66,7 +87,7 @@ class State(rx.State):
         self.usuario_editar.id_rol = int(usuario["id_rol"])
 
         #para obtener la informacion personal del usario a editar
-        datos : dict = controlador_personal.obtener_datos_personales_de_un_usario(usuario["id_insumo"])
+        datos : dict = controlador_personal.obtener_datos_personales_de_un_usario(usuario["id_usuario"])
 
         #editar los atributos de los datos personales del usuario
         self.personal_editar.id_personal = int(datos["id_personal"])
@@ -120,17 +141,17 @@ def vista_usuario():
         rx.input(
             placeholder="nombre de usuario",
             value=State.usuario_editar.nombre_usuario,
-            on_change=State.set_usuario_editar.nombre_usuario
+            on_change=State.set_nombre_usuario
         ),
         rx.input(
             placeholder="email",
             value=State.usuario_editar.email,
-            on_change=State.set_usuario_editar.email
+            on_change=State.set_email
         ),
         rx.input(
             placeholder="contrasena",
             value=State.usuario_editar.contrasena,
-            on_change=State.usuario_editar.contrasena
+            on_change=State.set_contrasena
         ),
 
         rx.select(
@@ -147,7 +168,7 @@ def vista_usuario():
         rx.input(
             placeholder="nombre",
             value=State.personal_editar.nombre,
-            on_change=State.set_personal_editar.nombre
+            on_change=State.set_nombre
         ),
 
         rx.input(
@@ -159,7 +180,7 @@ def vista_usuario():
         rx.select(
             ["Masculino","Femenino"],
             value=State.personal_editar.sexo,
-            on_change=State.personal_editar.sexo,
+            on_change=State.set_sexo,
             placeholder="Seleccione el sexo"
         ),
 
@@ -174,12 +195,12 @@ def vista_usuario():
         rx.cond(
             State.usuarios.length() > 0,
             rx.vstack(
-                rx.foreach(State.insumos, fila_usuario)
+                rx.foreach(State.usuarios, fila_usuario)
             ),
             rx.text("No hay usuarios cargados o la lista es nula")
         ),
 
-        rx.text(State.id_editando)
+        rx.text(State.usuario_editar.id_usuario)
 
         
     )
