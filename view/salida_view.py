@@ -182,7 +182,7 @@ def vista_salida():
 
         rx.divider(),
 
-        rx.heading("Detalle de Entrada"),
+        rx.heading("Detalle de Salida"),
 
         rx.cond(
             SalidaState.detalles.length() == 0,
