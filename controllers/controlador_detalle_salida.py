@@ -10,7 +10,7 @@ class controlador_paciente:
         cur.execute("SELECT id_detalle_salida, id_salida, id_insumo, cantidad, motivo, observacion FROM detalle_salida ORDER BY id_detalle_salida")
         
         # Instanciamos el modelo de Reflex
-        pacientes = [detalle_salida(
+        detalle_salidas = [detalle_salida(
             id_detalle_salida=row[0],
             id_salida=row[1],
             id_insumo=row[2],
@@ -20,7 +20,7 @@ class controlador_paciente:
         ) for row in cur.fetchall()]
         
         cur.close()
-        return pacientes
+        return detalle_salidas
 
 
     def agregar_detalle_salida(self,id_salida, id_insumo, cantidad, motivo, observacion):
